@@ -6,7 +6,7 @@ import ImageLinkForm from './Components/ImageLinkForm/ImageLinkForm';
 import Rank from './Components/Rank/Rank';
 import Particles from 'react-particles-js';
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
-
+import SignIn from './Components/SignIn/SignIn';
 import Clarifai from 'clarifai';
 
 // initialize with your api key. This will also work in your browser via http://browserify.org/
@@ -19,7 +19,7 @@ const app = new Clarifai.App({
 
 const particleOptions={
   particles: {
-    number: {
+    Number: {
       value:30,
       density:{
         enable:true,
@@ -36,9 +36,16 @@ class App extends Component{
     this.state={
       input:'',
       imageUrl:'',
-      box:{}
+      box:{},
+      route:'signin'
     }
   }
+
+  onRouteChange=(route)=>{
+    return(
+      this.setState({route:route})
+    );
+  };
 
   calculateFaceLocation=(data)=>{
     const clarifaiFace= data.outputs[0].data.regions[0].region_info.bounding_box;
@@ -75,12 +82,23 @@ class App extends Component{
   render(){
     return (
       <div className="App">
-        <Particles params={particleOptions} className='particles' />
-        <Navigation/>
-        <Logo/>
-        <Rank/>
-        <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
-        <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl}/>
+        <div>
+          <Particles params={particleOptions} className='particles' />
+        </div>
+        
+        <Navigation onRouteChange={this.onRouteChange}/>
+        { this.state.route === "signin" ?
+          <SignIn onRouteChange={this.onRouteChange}/> 
+          :
+          <div>
+            <Logo/>
+            <Rank/>
+            <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
+            <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl}/>
+          </div>
+        
+        }
+        
       </div>
     );
   }
